@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:notes/services/note_service.dart';
+import 'package:notes/widgets/note_dialog.dart';
 
 class NoteListScreen extends StatefulWidget {
   const NoteListScreen({super.key});
@@ -10,9 +11,6 @@ class NoteListScreen extends StatefulWidget {
 }
 
 class _NoteListScreenState extends State<NoteListScreen> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,52 +23,7 @@ class _NoteListScreenState extends State<NoteListScreen> {
           showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Add'),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Title : ',
-                        textAlign: TextAlign.start,
-                      ),
-                    ),
-                    TextField(
-                      controller: _titleController,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Description : ',
-                        textAlign: TextAlign.start,
-                      ),
-                    ),
-                    TextField(
-                      controller: _descriptionController,
-                    ),
-                  ],
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); //Pop untuk menutup
-                        },
-                        child: const Text('Cancel')),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      NoteService.addNote(_titleController.text,
-                              _descriptionController.text)
-                          .whenComplete(() => Navigator.of(context).pop());
-                    },
-                    child: const Text('Save'),
-                  ),
-                ],
-              );
+              return NoteDialog();
             },
           );
         },
@@ -107,82 +60,7 @@ class NoteList extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        TextEditingController titleController =
-                            TextEditingController(text: document['Title']);
-                        TextEditingController descriptionController =
-                            TextEditingController(
-                                text: document['Description']);
-                        return AlertDialog(
-                          title: const Text(
-                            'Update Notes',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  25, // Sesuaikan dengan ukuran yang Anda inginkan
-                            ),
-                          ),
-                          content: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Title : ',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize:
-                                      18, // Sesuaikan dengan ukuran yang Anda inginkan
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                              TextField(
-                                controller: titleController,
-                                // decoration: InputDecoration(
-                                //   hintText: document['Title'],
-                                // ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(top: 8.0),
-                                child: Text(
-                                  'Description : ',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        18, // Sesuaikan dengan ukuran yang Anda inginkan
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                              ),
-                              TextField(
-                                controller: descriptionController,
-                                // decoration: InputDecoration(
-                                //   hintText: document['Description'],
-                                // ),
-                              ),
-                            ],
-                          ),
-                          actions: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context)
-                                        .pop(); //Pop untuk menutup
-                                  },
-                                  child: const Text('Cancel')),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                NoteService.updateNote(
-                                        document['id'],
-                                        titleController.text,
-                                        descriptionController.text)
-                                    .whenComplete(
-                                        () => Navigator.of(context).pop());
-                              },
-                              child: const Text('Update'),
-                            ),
-                          ],
-                        );
+                        return NoteDialog(note: document);
                       },
                     );
                   },
