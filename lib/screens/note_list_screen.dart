@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:notes/screens/google_maps_screen.dart';
+import 'package:notes/screens/note_edit_screen.dart';
 import 'package:notes/services/note_service.dart';
-import 'package:notes/widgets/note_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NoteListScreen extends StatefulWidget {
@@ -20,11 +22,11 @@ class _NoteListScreenState extends State<NoteListScreen> {
       body: const NoteList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return const NoteDialog();
-            },
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const NoteEditScreen(),
+            ),
           );
         },
         tooltip: 'Add Note',
@@ -68,11 +70,11 @@ class NoteList extends StatelessWidget {
                 return Card(
                   child: InkWell(
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return NoteDialog(note: document);
-                        },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteEditScreen(note: document),
+                        ),
                       );
                     },
                     child: Column(
@@ -84,12 +86,19 @@ class NoteList extends StatelessWidget {
                                   topLeft: Radius.circular(16),
                                   topRight: Radius.circular(16),
                                 ),
-                                child: Image.network(
-                                  document.imageUrl!,
+                                child: CachedNetworkImage(
+                                  imageUrl: document.imageUrl!,
                                   fit: BoxFit.cover,
                                   alignment: Alignment.center,
                                   width: double.infinity,
                                   height: 150,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Center(
+                                    child: Icon(Icons.error),
+                                  ),
                                 ),
                               )
                             : Container(),
@@ -104,8 +113,19 @@ class NoteList extends StatelessWidget {
                                 onPressed: document.latitude != null &&
                                         document.longitude != null
                                     ? () {
-                                        _launchMaps(document.latitude!,
-                                            document.longitude!);
+                                        // _launchMaps(document.latitude!,
+                                        //     document.longitude!);
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                GoogleMapsScreen(
+                                                    latitude:
+                                                        document.latitude!,
+                                                    longitude:
+                                                        document.longitude!),
+                                          ),
+                                        );
                                       }
                                     : null, // Disable the button if latitude or longitude is null
                               ),
